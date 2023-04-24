@@ -1,0 +1,3 @@
+#!/bin/bash
+ssh -v ubuntu@100.26.243.4
+
