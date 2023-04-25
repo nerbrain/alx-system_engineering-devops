@@ -8,6 +8,6 @@ Host myserver
   Hostname 100.26.243.4
   User ubuntu
   IdentityFile ~/.ssh/school
-  PasswordAuthentication no
+  PasswordAuthentication yes
   ",
 }
