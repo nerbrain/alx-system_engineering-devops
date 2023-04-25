@@ -1,3 +1,6 @@
-#!/bin/bash
-ssh -v ubuntu@100.26.243.4
-
+# This is the ssh client system-wide configuration file
+Host myserver
+  Hostname 100.26.243.4
+  User ubuntu
+  IdentityFile ~/.ssh/school
+  PasswordAuthentication no
