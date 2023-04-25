@@ -1,3 +1,4 @@
+#SSH config file created with Puppet
 file { '/home/username/.ssh/config':
   owner   => 'username',
   group   => 'username',
