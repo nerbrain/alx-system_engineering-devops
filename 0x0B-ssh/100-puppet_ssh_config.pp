@@ -2,12 +2,12 @@
 file { '/home/username/.ssh/config':
   owner   => 'username',
   group   => 'username',
-  mode    => '0600',
+  mode    => '0755',
   content => "
 Host myserver
   Hostname 100.26.243.4
   User ubuntu
   IdentityFile ~/.ssh/school
-  PasswordAuthentication yes
+  PasswordAuthentication no
   ",
 }
