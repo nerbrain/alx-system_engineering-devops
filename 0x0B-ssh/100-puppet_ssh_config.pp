@@ -5,8 +5,8 @@ file { '/home/username/.ssh/config':
   mode    => '0600',
   content => "
 Host myserver
-  Hostname myserver.example.com
-  User myusername
+  Hostname 100.26.243.4
+  User ubuntu
   IdentityFile ~/.ssh/school
   PasswordAuthentication no
   ",
