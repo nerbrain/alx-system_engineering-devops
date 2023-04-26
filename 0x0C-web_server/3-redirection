@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+#install nginx server
+apt-get -y update
+apt-get -y install nginx
+sudo sed -i '/server_name _;/a \location /redirect_me {\n return 301 https://www.google.com\n }' /etc/nginx/sites-available/default
+service nginx start
+echo "Hello World!" > /var/www/html/index.nginx-debian.html
