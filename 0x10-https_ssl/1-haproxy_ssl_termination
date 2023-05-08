@@ -1,0 +1,13 @@
+frontend http-in
+    bind *:80
+    default_backend servers
+
+frontend www-https-in
+    bind *:443 ssl crt /etc/haproxy/ssl/nerschool.pem
+    mode tcp
+    default_backend servers
+
+backend servers
+    balance roundrobin
+    server 163926-web-01 100.26.243.4 check port 80
+    server 163926-web-02 52.86.172.136 check port 80
