@@ -4,20 +4,23 @@ import requests
 import sys
 
 if __name__ == "__main__":
-    url = 'https://jsonplaceholder.typicode.com/'
-    user = '{}users/{}'.format(url, sys.argv[1])
-    res = requests.get(user)
-    json_o = res.json()
-    print("Employee {} is done with tasks".format(json_o.get('name')), end="")
-
-    todos = '{}todos?userId={}'.format(url, sys.argv[1])
-    res = requests.get(todos)
-    tasks = res.json()
-    l_task = []
-    for task in tasks:
-        if task.get('completed') is True:
-            l_task.append(task)
-
-    print("({}/{}):".format(len(l_task), len(tasks)))
-    for task in l_task:
-        print("\t {}".format(task.get("title")))
+    if len(argv) != 2:
+        print("Usage: ./0-gather_data_from_an_API.py <employee id>")
+        exit()
+    user = requests.get(
+                     "https://jsonplaceholder.typicode.com/users/{}"
+                     .format(argv[1])
+                    ).json()
+    if not user:
+        exit()
+    else:
+        name = user.get('name')
+    all = requests.get(
+                     "https://jsonplaceholder.typicode.com/todos?userId={}"
+                     .format(argv[1])
+                    ).json()
+    dones = [i for i in all if i.get('completed')]
+    print("Employee {} is done with tasks({}/{}):"
+          .format(name, len(dones), len(all)))
+    for d in dones:
+        print("\t {}".format(d.get('title')))
