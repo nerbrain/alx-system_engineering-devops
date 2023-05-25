@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 """ Employee Info """
+import csv
 import requests
 import sys
-import csv
 
 if __name__ == "__main__":
     url = 'https://jsonplaceholder.typicode.com/'
@@ -23,6 +23,10 @@ if __name__ == "__main__":
 
     filename = '{}.csv'.format(userid)
     with open(filename, mode='w') as employee_file:
-        employee_writer = csv.writer(employee_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
+        employee_writer = csv.writer(
+            employee_file,
+            delimiter=',',
+            quotechar='"',
+            quoting=csv.QUOTE_ALL)
         for task in list_task:
             employee_writer.writerow(task)
