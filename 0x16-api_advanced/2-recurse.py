@@ -7,31 +7,29 @@ titles of all hot articles for a given subreddit.
 import requests
 
 
-def recurse(subreddit, hot_list=[]):
-    url = f"https://www.reddit.com/r/{subreddit}/hot.json"
-    headers = {'User-Agent': 'Mozilla/5.0'}
-
-    try:
-        response = requests.get(url, headers=headers)
-        if response.status_code == 200:
-            data = response.json()
-            posts = data['data']['children']
-            for post in posts:
-                title = post['data']['title']
-                hot_list.append(title)
-
-            # Check if there is a next page
-            after = data['data']['after']
-            if after:
-                return recurse(subreddit, hot_list=hot_list)
-            else:
-                return hot_list
-        elif response.status_code == 302:
-            # Redirect to search results indicates an invalid subreddit
-            return None
-        else:
-            # Other status codes indicate a failed request
-            return None
-    except requests.exceptions.RequestException as e:
-        print(f"An error occurred: {e}")
+def recurse(subreddit, after=None, hot_list=[]):
+    """get all posts of a subreddit
+    """
+    data = {
+        'User-agent': 'Iamabot'
+    }
+    url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
+    if after:
+        url += "?after={}".format(after)
+    r = requests.get(url,
+                     headers=data,
+                     allow_redirects=False
+                     )
+    if r.status_code != 200:
         return None
+    else:
+        posts = r.json().get('data').get('children')
+        for post in posts:
+            hot_list.append(post.get('data').get('title'))
+        if r.json().get('data').get('after'):
+            return recurse(
+                subreddit,
+                after=r.json().get('data').get('after'),
+                hot_list=hot_list
+            )
+        return hot_list
