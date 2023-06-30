@@ -3,43 +3,71 @@
 parses the title of all hot articles
 and prints a sorted count of given keywords
 """
+
+import re
 import requests
+import sys
 
 
-def count_words(subreddit, word_list, after=None, d=None):
-    """get all posts of a subreddit
-    and count key words
-    """
-    data = {
-        'User-agent': 'Iamabot'
+def add_title(dictionary, hot_posts):
+    """ Adds item into a list """
+    if len(hot_posts) == 0:
+        return
+
+    title = hot_posts[0]['data']['title'].split()
+    for word in title:
+        for key in dictionary.keys():
+            c = re.compile("^{}$".format(key), re.I)
+            if c.findall(word):
+                dictionary[key] += 1
+    hot_posts.pop(0)
+    add_title(dictionary, hot_posts)
+
+
+def recurse(subreddit, dictionary, after=None):
+    """ Queries to Reddit API """
+    u_agent = 'Mozilla/5.0'
+    headers = {
+        'User-Agent': u_agent
     }
+
+    params = {
+        'after': after
+    }
+
     url = "https://www.reddit.com/r/{}/hot.json".format(subreddit)
-    if after:
-        url += "?after={}".format(after)
-    if not d:
-        d = {k.lower(): 0 for k in word_list}
-    r = requests.get(url,
-                     headers=data,
-                     allow_redirects=False
-                     )
-    if r.status_code != 200:
+    res = requests.get(url,
+                       headers=headers,
+                       params=params,
+                       allow_redirects=False)
+
+    if res.status_code != 200:
         return None
+
+    dic = res.json()
+    hot_posts = dic['data']['children']
+    add_title(dictionary, hot_posts)
+    after = dic['data']['after']
+    if not after:
+        return
+    recurse(subreddit, dictionary, after=after)
+
+
+def count_words(subreddit, word_list):
+    """ Init function """
+    dictionary = {}
+
+    for word in word_list:
+        dictionary[word] = 0
+
+    recurse(subreddit, dictionary)
+
+    l = sorted(dictionary.items(), key=lambda kv: kv[1])
+    l.reverse()
+
+    if len(l) != 0:
+        for item in l:
+            if item[1] is not 0:
+                print("{}: {}".format(item[0], item[1]))
     else:
-        posts = r.json().get('data').get('children')
-        for post in posts:
-            twords = post.get('data').get('title').lower().split(' ')
-            for tword in twords:
-                if tword in word_list:
-                    d[tword] += 1
-        if r.json().get('data').get('after'):
-            return count_words(
-                subreddit,
-                after=r.json().get('data').get('after'),
-                word_list=word_list,
-                d=d
-            )
-        res = [(k, v) for k, v in d.items()]
-        res.sort(key=lambda x: x[1], reverse=True)
-        for r in res:
-            if r[1] > 0:
-                print("{}: {}".format(r[0], r[1]))
+        print("")
